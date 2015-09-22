@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2012 The Android Open Source Project
- * Copyright (c) 2012-2014 The CyanogenMod Project
+ * Copyright (c) 2012-2015 The CyanogenMod Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,7 +168,7 @@ static int boostpulse_open(struct cm_power_module *cm)
 }
 
 static void cm_power_hint(struct power_module *module, power_hint_t hint,
-                            void *data)
+                          void *data)
 {
     struct cm_power_module *cm = (struct cm_power_module *) module;
     char buf[80];
@@ -176,33 +176,34 @@ static void cm_power_hint(struct power_module *module, power_hint_t hint,
     int duration = 1;
 
     switch (hint) {
-    case POWER_HINT_INTERACTION:
-    case POWER_HINT_CPU_BOOST:
-        if (boostpulse_open(cm) >= 0) {
-            if (data != NULL)
-                duration = (int) data;
+        case POWER_HINT_INTERACTION:
+        case POWER_HINT_CPU_BOOST:
+        case POWER_HINT_LAUNCH_BOOST:
+            if (boostpulse_open(cm) >= 0) {
+                if (data != NULL)
+                    duration = (int) data / 1000;
 
-            snprintf(buf, sizeof(buf), "%d", duration);
-            len = write(cm->boostpulse_fd, buf, strlen(buf));
+                snprintf(buf, sizeof(buf), "%d", duration);
+                len = write(cm->boostpulse_fd, buf, strlen(buf));
 
-            if (len < 0) {
-                strerror_r(errno, buf, sizeof(buf));
-                ALOGE("Error writing to boostpulse: %s\n", buf);
+                if (len < 0) {
+                    strerror_r(errno, buf, sizeof(buf));
+                    ALOGE("Error writing to boostpulse: %s\n", buf);
 
-                pthread_mutex_lock(&cm->lock);
-                close(cm->boostpulse_fd);
-                cm->boostpulse_fd = -1;
-                cm->boostpulse_warned = 0;
-                pthread_mutex_unlock(&cm->lock);
+                    pthread_mutex_lock(&cm->lock);
+                    close(cm->boostpulse_fd);
+                    cm->boostpulse_fd = -1;
+                    cm->boostpulse_warned = 0;
+                    pthread_mutex_unlock(&cm->lock);
+                }
             }
-        }
-        break;
+            break;
 
-    case POWER_HINT_VSYNC:
-        break;
+        case POWER_HINT_VSYNC:
+            break;
 
-    default:
-        break;
+        default:
+            break;
     }
 }
 
