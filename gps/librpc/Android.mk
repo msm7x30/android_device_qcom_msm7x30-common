@@ -25,6 +25,8 @@ LOCAL_MODULE:= librpc
 
 LOCAL_MODULE_TAGS := optional
 
+LOCAL_CLANG := false
+
 include $(BUILD_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -34,4 +36,7 @@ LOCAL_STATIC_LIBRARIES := libpower
 LOCAL_WHOLE_STATIC_LIBRARIES := librpc
 
 # LOCAL_PRELINK_MODULE := false
+
+LOCAL_CLANG := false
+
 include $(BUILD_SHARED_LIBRARY)

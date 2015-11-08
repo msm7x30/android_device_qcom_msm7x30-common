@@ -58,6 +58,8 @@ LOCAL_C_INCLUDES:= \
 
 LOCAL_MODULE:= libloc_api-rpc
 
+LOCAL_CLANG := false
+
 include $(BUILD_STATIC_LIBRARY)
 
 endif
